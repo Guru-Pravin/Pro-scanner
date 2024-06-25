@@ -33,12 +33,14 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 30,
-    fontFamily: 'Nunito-Bold',
+    fontWeight:'700',
+    color:'black',
   },
   subtitle: {
     fontSize: 16,
     color: '#666',
-    fontFamily: 'Nunito-Regular',
+    fontWeight:'400',
+    color:'black',
   },
 });
 

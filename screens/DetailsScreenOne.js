@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
     marginBottom:20,
   },
   quotes: {
-    fontFamily: 'Nunito-Bold',
+    color:'black',
     fontSize: 20,
     textAlign: 'center',
     fontWeight: '500',

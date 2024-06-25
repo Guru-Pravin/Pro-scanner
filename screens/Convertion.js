@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, Text, StyleSheet,TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import reactNativeHTMLToPdf from 'react-native-html-to-pdf';
+import RNFS from 'react-native-fs';
 
 export default function Convertion({ route, navigation }) {
   const now = new Date();
@@ -22,15 +23,16 @@ export default function Convertion({ route, navigation }) {
               img {
                 width: 100%;
                 height: 100%;
-                object-fit: cover;
+                object-fit: contain;
+                image-rendering: optimizeQuality;
+                -ms-interpolation-mode: bicubic;
               }
             </style>
           </head>
           <body>
             <img src='${imageUri}'/>
           </body>
-        </html>`
-        ,
+        </html>`,
       fileName: `${timestamp}`,
       directory: 'Documents',
     };
@@ -38,6 +40,17 @@ export default function Convertion({ route, navigation }) {
     try {
       const file = await reactNativeHTMLToPdf.convert(options);
       console.log(file);
+
+      // Now download the generated PDF file
+      const destPath = `${RNFS.DownloadDirectoryPath}/${timestamp}.pdf`;
+
+      try {
+        await RNFS.copyFile(file.filePath, destPath);
+        Alert.alert('Download Success', `File saved to ${destPath}`);
+      } catch (error) {
+        Alert.alert('Download Error', error.message);
+      }
+
       navigation.navigate('PdfViewer', { pdfPath: file.filePath });
     } catch (error) {
       console.error(error);
@@ -51,8 +64,8 @@ export default function Convertion({ route, navigation }) {
       </Text>
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.galleryButton} onPress={generatePdf}>
-            <Text style={styles.buttonText2}>Generate Pdf</Text>
-          </TouchableOpacity>
+          <Text style={styles.buttonText2}>Generate Pdf</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
