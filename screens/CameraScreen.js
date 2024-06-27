@@ -1,39 +1,42 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Image, TouchableOpacity, StyleSheet, Text } from 'react-native';
-import ImagePicker from 'react-native-image-crop-picker';
-import { useNavigation } from '@react-navigation/native';
+import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 const CameraScreen = () => {
   const [imageUri, setImageUri] = useState(null);
   const [isImageSelected, setIsImageSelected] = useState(false);
   const navigation = useNavigation();
+  const route = useRoute();
 
-  const upload = () => {
-    ImagePicker.openPicker({
-      width: 300,
-      height: 400,
-      cropping: true,
-    })
-      .then(image => {
-        console.log(image);
-        setImageUri(image.path);
-        setIsImageSelected(true);
-      })
-      .catch(err => console.log(err));
+  useEffect(() => {
+    if (route.params?.retake) {
+      retakeImage();
+    }
+  }, [route.params]);
+
+  const openLibrary = async () => {
+    const result = await launchImageLibrary({
+      mediaType: 'photo',
+      includeBase64: false,
+      quality: 1, // Set quality to 1 for HD
+    });
+    if (result?.assets && result.assets.length > 0) {
+      setImageUri(result.assets[0].uri);
+      setIsImageSelected(true);
+    }
   };
 
-  const openCamera = () => {
-    ImagePicker.openCamera({
-      width: 300,
-      height: 400,
-      cropping: true,
-    })
-      .then(image => {
-        console.log(image);
-        setImageUri(image.path);
-        setIsImageSelected(true);
-      })
-      .catch(err => console.log(err));
+  const openCamera = async () => {
+    const result = await launchCamera({
+      mediaType: 'photo',
+      includeBase64: false,
+      quality: 1, // Set quality to 1 for HD
+    });
+    if (result?.assets && result.assets.length > 0) {
+      setImageUri(result.assets[0].uri);
+      setIsImageSelected(true);
+    }
   };
 
   const retakeImage = () => {
@@ -66,7 +69,7 @@ const CameraScreen = () => {
           <TouchableOpacity style={styles.openCameraButton} onPress={openCamera}>
             <Text style={styles.buttonText1}>Open Camera</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.galleryButton} onPress={upload}>
+          <TouchableOpacity style={styles.galleryButton} onPress={openLibrary}>
             <Text style={styles.buttonText2}>Choose from Gallery</Text>
           </TouchableOpacity>
         </>
@@ -82,6 +85,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
+    color: 'black',
     fontSize: 20,
     fontWeight: '500',
   },

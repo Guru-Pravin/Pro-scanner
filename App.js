@@ -1,6 +1,10 @@
 import * as React from 'react';
+import  { useEffect } from 'react';
+import { Alert } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { check, request, PERMISSIONS, RESULTS, openSettings } from 'react-native-permissions';
+
 import HomeScreen from './screens/HomeScreen';
 import DetailsScreenOne from './screens/DetailsScreenOne';
 import DetailsScreenTwo from './screens/DetailsScreenTwo';
@@ -11,7 +15,66 @@ import PdfViewer from './screens/PdfViewer';
 
 const Stack = createNativeStackNavigator();
 
-function App() {
+const App = () => {
+  const checkAndRequestPermissions = async () => {
+    // Check Camera Permission
+    const cameraPermission = await check(PERMISSIONS.ANDROID.CAMERA);
+    if (cameraPermission !== RESULTS.GRANTED) {
+      const cameraRequest = await request(PERMISSIONS.ANDROID.CAMERA);
+      if (cameraRequest !== RESULTS.GRANTED) {
+        Alert.alert(
+          'Permission Denied',
+          'Camera permission is required to use this feature. Please enable it in settings.',
+          [
+            { text: 'Cancel', style: 'cancel' },
+            { text: 'Open Settings', onPress: () => openSettings() },
+          ]
+        );
+        return;
+      }
+    }
+
+    // Check Read External Storage Permission
+    const readStoragePermission = await check(PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE);
+    if (readStoragePermission !== RESULTS.GRANTED) {
+      const readStorageRequest = await request(PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE);
+      if (readStorageRequest !== RESULTS.GRANTED) {
+        Alert.alert(
+          'Permission Denied',
+          'Read Storage permission is required to use this feature. Please enable it in settings.',
+          [
+            { text: 'Cancel', style: 'cancel' },
+            { text: 'Open Settings', onPress: () => openSettings() },
+          ]
+        );
+        return;
+      }
+    }
+
+    // Check Write External Storage Permission
+    const writeStoragePermission = await check(PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE);
+    if (writeStoragePermission !== RESULTS.GRANTED) {
+      const writeStorageRequest = await request(PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE);
+      if (writeStorageRequest !== RESULTS.GRANTED) {
+        Alert.alert(
+          'Permission Denied',
+          'Write Storage permission is required to use this feature. Please enable it in settings.',
+          [
+            { text: 'Cancel', style: 'cancel' },
+            { text: 'Open Settings', onPress: () => openSettings() },
+          ]
+        );
+        return;
+      }
+    }
+
+    Alert.alert('All Permissions Granted', 'You have all the required permissions!');
+  };
+
+  useEffect(() => {
+    checkAndRequestPermissions();
+  }, []);
+
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="HomeScreen">
@@ -25,6 +88,6 @@ function App() {
       </Stack.Navigator>
     </NavigationContainer>
   );
-}
+};
 
 export default App;
