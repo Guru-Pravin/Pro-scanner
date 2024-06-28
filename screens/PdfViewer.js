@@ -72,6 +72,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent:'center',
     
+    
   },
   backButton: {
     width:100,
@@ -79,10 +80,9 @@ const styles = StyleSheet.create({
     justifyContent:'center',
     flexDirection: 'row',
     alignItems: 'center',
-    marginRight: 200,
+    marginRight: 180,
     backgroundColor:'#FFB2FF',
     borderRadius:20,
-
   },
   shareButton: {
     width:100,
