@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, Dimensions, View, TouchableOpacity, Image, Text } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Pdf from 'react-native-pdf';
+import Share from 'react-native-share';
 
 const PdfViewer = ({ route }) => {
   const { pdfPath } = route.params;
@@ -12,14 +13,33 @@ const PdfViewer = ({ route }) => {
     navigation.navigate('CameraScreen', { reset: true, retake: true });
   };
 
+  const handleShare = async () => {
+    try {
+      await Share.open({
+        url: `file://${pdfPath}`,
+        type: 'application/pdf',
+      });
+    } catch (error) {
+      console.log('Error sharing the PDF:', error);
+    }
+  };
+
   return (
     <View style={styles.container}>
+    <View style={styles.buttoncontainer}>
       <TouchableOpacity onPress={handleBack}>
         <View style={styles.backButton}>
           <Image source={require('../assets/icons/arrow-left.png')} style={styles.icon} />
           <Text style={{color:'black',fontSize:16}}>Back</Text>
         </View>
       </TouchableOpacity>
+      <TouchableOpacity onPress={handleShare}>
+        <View style={styles.shareButton}>
+          <Image source={require('../assets/icons/share.png')} style={styles.shareicon} />
+          <Text style={{color:'white',fontSize:16}}>Share</Text>
+        </View>
+      </TouchableOpacity>
+      </View>
       <Pdf
         source={source}
         onLoadComplete={(numberOfPages, filePath) => {
@@ -47,17 +67,42 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 25,
   },
+  buttoncontainer:{
+    flex:0,
+    flexDirection: 'row',
+    justifyContent:'center',
+    
+  },
   backButton: {
+    width:100,
+    height:35,
+    justifyContent:'center',
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 10,
-    marginRight:300,
+    marginRight: 200,
+    backgroundColor:'#FFB2FF',
+    borderRadius:20,
+
+  },
+  shareButton: {
+    width:100,
+    height:35,
+    justifyContent:'center',
+    backgroundColor:'#9F149F',
+    borderRadius:20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft: 0,
   },
   icon: {
     width: 24,
     height: 24,
     marginRight: 5,
-    color:'black',
+  },
+  shareicon:{
+    width: 24,
+    height: 24,
+    marginRight: 5,
   },
   pdf: {
     flex: 1,
